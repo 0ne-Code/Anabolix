@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using System.Collections;
 
@@ -16,6 +15,9 @@ public class AbilityTarget : MonoBehaviour
     private Vector3 savedVelocity;
     private Vector3 savedAngularVelocity;
 
+    // Reference to the special back-and-forth barrier behavior.
+    private BackAndForthBarrier backAndForthBarrier;
+
     [Header("Phase Shift")]
     [SerializeField] private bool canPhaseShift = false;
     [SerializeField] private float phaseDuration = 3f;
@@ -24,14 +26,20 @@ public class AbilityTarget : MonoBehaviour
     private bool[] originalColliderStates;
     private Coroutine phaseRoutine;
 
-    public bool CanPhaseShift => canPhaseShift;
+    // Special behavior for ceiling-mounted objects.
+    private CeilingObject ceilingObject;
 
+    public bool CanPhaseShift => canPhaseShift;
     public bool CanFlipGravity => canFlipGravity;
     public bool CanTimeFreeze => canTimeFreeze;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+
+        ceilingObject = GetComponent<CeilingObject>();
+        backAndForthBarrier = GetComponent<BackAndForthBarrier>();
+
         targetColliders = GetComponentsInChildren<Collider>();
         originalColliderStates = new bool[targetColliders.Length];
 
@@ -40,12 +48,20 @@ public class AbilityTarget : MonoBehaviour
             originalColliderStates[i] = targetColliders[i].enabled;
         }
 
-        rb.useGravity = true;
+        // CeilingObject controls its own initial physics settings.
+        if (ceilingObject == null)
+        {
+            rb.useGravity = true;
+        }
     }
 
     private void FixedUpdate()
     {
-        if (gravityInverted && !timeFrozen)
+        // Normal Gravity Flip behavior.
+        // Ceiling objects use their own release behavior instead.
+        if (ceilingObject == null &&
+            gravityInverted &&
+            !timeFrozen)
         {
             rb.AddForce(Vector3.up * 9.81f, ForceMode.Acceleration);
         }
@@ -55,6 +71,13 @@ public class AbilityTarget : MonoBehaviour
     {
         if (!canFlipGravity || timeFrozen)
             return;
+
+        // Release the sofa if this is a ceiling-mounted object.
+        if (ceilingObject != null)
+        {
+            ceilingObject.Release();
+            return;
+        }
 
         gravityInverted = !gravityInverted;
         rb.useGravity = !gravityInverted;
@@ -69,6 +92,15 @@ public class AbilityTarget : MonoBehaviour
         if (!canTimeFreeze)
             return;
 
+        // If this is one of the linked barriers,
+        // let the barrier handle freezing both barriers.
+        if (backAndForthBarrier != null)
+        {
+            backAndForthBarrier.ToggleFreeze();
+            return;
+        }
+
+        // Normal AbilityTarget objects freeze individually.
         if (!timeFrozen)
         {
             savedVelocity = rb.linearVelocity;
@@ -106,6 +138,7 @@ public class AbilityTarget : MonoBehaviour
         {
             targetCollider.enabled = false;
         }
+
         Debug.Log("Phase Shift: ON");
 
         yield return new WaitForSeconds(phaseDuration);
@@ -114,6 +147,7 @@ public class AbilityTarget : MonoBehaviour
         {
             targetColliders[i].enabled = originalColliderStates[i];
         }
+
         Debug.Log("Phase Shift: OFF");
 
         phaseRoutine = null;

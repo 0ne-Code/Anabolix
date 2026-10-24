@@ -1,54 +1,100 @@
+
 using UnityEngine;
 
 public class MouseLook : MonoBehaviour
 {
-    [SerializeField] private float mouseSens = 0.1f;
+    private const string SensitivityKey = "MouseSensitivity";
 
+    [SerializeField] private float mouseSens = 0.1f;
     [SerializeField] private Transform player;
     [SerializeField] private float transitionSpeed = 20f;
 
     public float currentYaw;
+
     private float targetYaw;
     private float currentPitch;
     private float targetPitch;
 
     private PlayerInputActions playerInput;
-    void Awake()
+
+    private void Awake()
     {
         playerInput = new PlayerInputActions();
+        LoadSensitivity();
+    }
 
-        Cursor.lockState = CursorLockMode.Locked; ;
+    private void Start()
+    {
+        LockCursor();
+    }
+
+    private void OnEnable()
+    {
+        if (playerInput != null)
+            playerInput.Player.Enable();
+    }
+
+    private void OnDisable()
+    {
+        if (playerInput != null)
+            playerInput.Player.Disable();
+    }
+
+    private void OnDestroy()
+    {
+        playerInput?.Dispose();
+    }
+
+    private void LockCursor()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
-    void OnEnable()
+    private void LoadSensitivity()
     {
-        playerInput.Player.Enable();
+        mouseSens = PlayerPrefs.GetFloat(SensitivityKey, 0.1f);
     }
 
-    void OnDisable()
+    public void SetSensitivity(float value)
     {
-        playerInput.Player.Disable();
+        mouseSens = value;
     }
 
-    void Update()
+    private void Update()
     {
+        // Don't rotate the camera while the game is paused.
+        if (Time.timeScale == 0f)
+            return;
+
+        // Keep the cursor hidden during active gameplay.
+        if (Cursor.lockState != CursorLockMode.Locked)
+            LockCursor();
+
         Vector2 lookInput = playerInput.Player.Look.ReadValue<Vector2>();
 
-        float mouseX = (lookInput.x * mouseSens);
-        float mouseY = (lookInput.y * mouseSens);
+        float mouseX = lookInput.x * mouseSens;
+        float mouseY = lookInput.y * mouseSens;
 
         targetYaw += mouseX;
-        currentYaw = Mathf.Lerp(currentYaw, targetYaw, transitionSpeed * Time.deltaTime);
+        currentYaw = Mathf.Lerp(
+            currentYaw, targetYaw, transitionSpeed * Time.deltaTime
+        );
 
         targetPitch -= mouseY;
         targetPitch = Mathf.Clamp(targetPitch, -90f, 90f);
-        currentPitch = Mathf.Lerp(currentPitch, targetPitch, transitionSpeed * Time.deltaTime);
 
+        currentPitch = Mathf.Lerp(
+            currentPitch, targetPitch, transitionSpeed * Time.deltaTime
+        );
     }
 
-    void LateUpdate()
+    private void LateUpdate()
     {
-        transform.localRotation = Quaternion.Euler(currentPitch, currentYaw, 0f);        
+        if (Time.timeScale == 0f)
+            return;
+
+        transform.localRotation =
+            Quaternion.Euler(currentPitch, currentYaw, 0f);
     }
 }
