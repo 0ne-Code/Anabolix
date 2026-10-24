@@ -313,6 +313,91 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2a440c5893cd1cd42abf8830ce653ffc, type: 3}
+--- !u!1001 &25066392
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1078900262097579109, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
+      propertyPath: m_Size.x
+      value: 14.699564
+      objectReference: {fileID: 0}
+    - target: {fileID: 1078900262097579109, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
+      propertyPath: m_Size.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1078900262097579109, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
+      propertyPath: m_Size.z
+      value: 11.139215
+      objectReference: {fileID: 0}
+    - target: {fileID: 1078900262097579109, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
+      propertyPath: m_Center.x
+      value: -6.5530825
+      objectReference: {fileID: 0}
+    - target: {fileID: 1078900262097579109, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
+      propertyPath: m_Center.y
+      value: -7.6000004
+      objectReference: {fileID: 0}
+    - target: {fileID: 1078900262097579109, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
+      propertyPath: m_Center.z
+      value: 18.356407
+      objectReference: {fileID: 0}
+    - target: {fileID: 1694917566566145593, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
+      propertyPath: m_Name
+      value: RestartTrigger (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1943456373744479396, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 38.82037
+      objectReference: {fileID: 0}
+    - target: {fileID: 1943456373744479396, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 9.36
+      objectReference: {fileID: 0}
+    - target: {fileID: 1943456373744479396, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.68828
+      objectReference: {fileID: 0}
+    - target: {fileID: 1943456373744479396, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1943456373744479396, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1943456373744479396, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1943456373744479396, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1943456373744479396, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1943456373744479396, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1943456373744479396, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5928996371133961711, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
+      propertyPath: failPanel
+      value: 
+      objectReference: {fileID: 138655870}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: eb3643c6cf34ccc4e839bbeea44fd7a7, type: 3}
 --- !u!1 &76769669
 GameObject:
   m_ObjectHideFlags: 0
@@ -1617,7 +1702,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbilityTarget
   canFlipGravity: 0
   canTimeFreeze: 0
-  canPhaseShift: 1
+  canPhaseShift: 0
   phaseDuration: 3
 --- !u!54 &428012381
 Rigidbody:
@@ -1759,7 +1844,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbilityTarget
   canFlipGravity: 0
   canTimeFreeze: 0
-  canPhaseShift: 1
+  canPhaseShift: 0
   phaseDuration: 3
 --- !u!54 &440557802
 Rigidbody:
@@ -2804,7 +2889,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbilityTarget
   canFlipGravity: 0
   canTimeFreeze: 0
-  canPhaseShift: 1
+  canPhaseShift: 0
   phaseDuration: 3
 --- !u!54 &637634077
 Rigidbody:
@@ -3101,7 +3186,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbilityTarget
   canFlipGravity: 0
   canTimeFreeze: 0
-  canPhaseShift: 1
+  canPhaseShift: 0
   phaseDuration: 3
 --- !u!54 &681031796
 Rigidbody:
@@ -3567,7 +3652,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbilityTarget
   canFlipGravity: 0
   canTimeFreeze: 0
-  canPhaseShift: 1
+  canPhaseShift: 0
   phaseDuration: 3
 --- !u!54 &968952865
 Rigidbody:
@@ -3792,7 +3877,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbilityTarget
   canFlipGravity: 0
   canTimeFreeze: 0
-  canPhaseShift: 1
+  canPhaseShift: 0
   phaseDuration: 3
 --- !u!54 &1158795707
 Rigidbody:
@@ -4514,7 +4599,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbilityTarget
   canFlipGravity: 0
   canTimeFreeze: 0
-  canPhaseShift: 1
+  canPhaseShift: 0
   phaseDuration: 3
 --- !u!54 &1324306446
 Rigidbody:
@@ -5047,7 +5132,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbilityTarget
   canFlipGravity: 0
   canTimeFreeze: 0
-  canPhaseShift: 1
+  canPhaseShift: 0
   phaseDuration: 3
 --- !u!54 &1407988591
 Rigidbody:
@@ -5443,7 +5528,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbilityTarget
   canFlipGravity: 0
   canTimeFreeze: 0
-  canPhaseShift: 1
+  canPhaseShift: 0
   phaseDuration: 3
 --- !u!54 &1475436447
 Rigidbody:
@@ -5809,7 +5894,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbilityTarget
   canFlipGravity: 0
   canTimeFreeze: 0
-  canPhaseShift: 1
+  canPhaseShift: 0
   phaseDuration: 3
 --- !u!54 &1529753394
 Rigidbody:
@@ -6079,7 +6164,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbilityTarget
   canFlipGravity: 0
   canTimeFreeze: 0
-  canPhaseShift: 1
+  canPhaseShift: 0
   phaseDuration: 3
 --- !u!54 &1665153459
 Rigidbody:
@@ -6499,7 +6584,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbilityTarget
   canFlipGravity: 0
   canTimeFreeze: 0
-  canPhaseShift: 1
+  canPhaseShift: 0
   phaseDuration: 3
 --- !u!54 &1745215150
 Rigidbody:
@@ -6952,7 +7037,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbilityTarget
   canFlipGravity: 0
   canTimeFreeze: 0
-  canPhaseShift: 1
+  canPhaseShift: 0
   phaseDuration: 3
 --- !u!54 &1951837146
 Rigidbody:
@@ -7262,7 +7347,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbilityTarget
   canFlipGravity: 0
   canTimeFreeze: 0
-  canPhaseShift: 1
+  canPhaseShift: 0
   phaseDuration: 3
 --- !u!54 &2039051722
 Rigidbody:
@@ -7514,6 +7599,7 @@ SceneRoots:
   - {fileID: 213624178}
   - {fileID: 1190863559}
   - {fileID: 1527404308}
+  - {fileID: 25066392}
   - {fileID: 1486402056}
   - {fileID: 853777033}
   - {fileID: 1327468395}

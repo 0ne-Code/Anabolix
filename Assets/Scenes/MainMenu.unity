@@ -1871,6 +1871,14 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 2027839951}
+    - target: {fileID: 1288886610410230352, guid: 41cb99eaa9d3b9c4e817a3019bd951e3, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: CloseSettings
+      objectReference: {fileID: 0}
+    - target: {fileID: 1288886610410230352, guid: 41cb99eaa9d3b9c4e817a3019bd951e3, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: MainMenuManager, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 3882953705702246611, guid: 41cb99eaa9d3b9c4e817a3019bd951e3, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
