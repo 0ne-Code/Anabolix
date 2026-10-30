@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
@@ -10,7 +9,8 @@ public class GameManager : MonoBehaviour
     [Header("Level Settings")]
     [SerializeField] private float voidHeight = -20f;
 
-    private bool isRestarting = false;
+    private Transform player;
+    private bool isRestarting;
 
     private void Awake()
     {
@@ -23,18 +23,25 @@ public class GameManager : MonoBehaviour
         Instance = this;
     }
 
+    private void Start()
+    {
+        CachePlayer();
+    }
+
     private void Update()
     {
-        // Restart the current level when the player falls into the void.
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        // Retry only while the Player reference is unavailable.
+        if (player == null)
+        {
+            CachePlayer();
+        }
 
-        if (player != null && player.transform.position.y <= voidHeight)
+        if (player != null && player.position.y <= voidHeight)
         {
             RestartLevel();
             return;
         }
 
-        // Temporary testing shortcut: press R to restart.
         if (Keyboard.current != null &&
             Keyboard.current.rKey.wasPressedThisFrame)
         {
@@ -42,9 +49,20 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void CachePlayer()
+    {
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+
+        if (playerObject != null)
+        {
+            player = playerObject.transform;
+        }
+    }
+
     public void RestartLevel()
     {
-        if (isRestarting) return;
+        if (isRestarting)
+            return;
 
         isRestarting = true;
 
@@ -54,6 +72,15 @@ public class GameManager : MonoBehaviour
             SceneManager.GetActiveScene().buildIndex
         );
 
-        isRestarting = false;
+        // Do not reset isRestarting here.
+        // This scene's GameManager will be destroyed during reloading.
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 }

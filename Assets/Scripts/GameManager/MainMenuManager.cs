@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -13,6 +12,15 @@ public class MainMenuManager : MonoBehaviour
 
     private void Start()
     {
+        if (mainButtons == null || settingsPanel == null)
+        {
+            Debug.LogError(
+                "MainMenuManager: Assign both menu panels!", this
+            );
+            enabled = false;
+            return;
+        }
+
         mainButtons.SetActive(true);
         settingsPanel.SetActive(false);
 
@@ -23,6 +31,12 @@ public class MainMenuManager : MonoBehaviour
 
     public void StartGame()
     {
+        if (string.IsNullOrWhiteSpace(firstLevelScene))
+        {
+            Debug.LogError("MainMenuManager: First level scene is empty!", this);
+            return;
+        }
+
         Time.timeScale = 1f;
         SceneManager.LoadScene(firstLevelScene);
     }
@@ -35,12 +49,18 @@ public class MainMenuManager : MonoBehaviour
 
     public void OpenSettings()
     {
+        if (mainButtons == null || settingsPanel == null)
+            return;
+
         mainButtons.SetActive(false);
         settingsPanel.SetActive(true);
     }
 
     public void CloseSettings()
     {
+        if (mainButtons == null || settingsPanel == null)
+            return;
+
         settingsPanel.SetActive(false);
         mainButtons.SetActive(true);
     }

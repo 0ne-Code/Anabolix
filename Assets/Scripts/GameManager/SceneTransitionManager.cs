@@ -1,4 +1,3 @@
-
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -30,8 +29,8 @@ public class SceneTransitionManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // Make sure the fade overlay renders above the game.
         Canvas canvas = GetComponent<Canvas>();
+
         if (canvas != null)
         {
             canvas.sortingOrder = 999;
@@ -43,7 +42,6 @@ public class SceneTransitionManager : MonoBehaviour
 
     private IEnumerator Start()
     {
-        // Fade into the first level when the game starts.
         yield return Fade(1f, 0f);
     }
 
@@ -52,6 +50,12 @@ public class SceneTransitionManager : MonoBehaviour
         if (transitionInProgress)
             return;
 
+        if (string.IsNullOrWhiteSpace(nextScene))
+        {
+            Debug.LogError("SceneTransitionManager: Next scene is empty!", this);
+            return;
+        }
+
         StartCoroutine(TransitionRoutine(line, nextScene));
     }
 
@@ -59,22 +63,28 @@ public class SceneTransitionManager : MonoBehaviour
     {
         transitionInProgress = true;
 
-        // Show the entity's line.
-        dialogueText.text = line;
-        SetDialogueAlpha(1f);
+        if (dialogueText != null)
+        {
+            dialogueText.text = line;
+            SetDialogueAlpha(1f);
+        }
 
-        yield return new WaitForSeconds(dialogueDuration);
+        yield return new WaitForSecondsRealtime(
+            Mathf.Max(0f, dialogueDuration)
+        );
 
-        // Hide the dialogue and fade the screen to black.
         SetDialogueAlpha(0f);
+
         yield return Fade(0f, 1f);
 
-        // Load the next scene while the screen is black.
         AsyncOperation operation = SceneManager.LoadSceneAsync(nextScene);
 
         if (operation == null)
         {
-            Debug.LogError("Could not load scene: " + nextScene);
+            Debug.LogError(
+                "Could not load scene: " + nextScene, this
+            );
+
             transitionInProgress = false;
             yield return Fade(1f, 0f);
             yield break;
@@ -85,7 +95,6 @@ public class SceneTransitionManager : MonoBehaviour
             yield return null;
         }
 
-        // Reveal the new level.
         yield return Fade(1f, 0f);
 
         transitionInProgress = false;
@@ -93,15 +102,22 @@ public class SceneTransitionManager : MonoBehaviour
 
     private IEnumerator Fade(float startAlpha, float endAlpha)
     {
+        float duration = Mathf.Max(0f, fadeDuration);
         float elapsed = 0f;
 
         SetFadeAlpha(startAlpha);
 
-        while (elapsed < fadeDuration)
+        if (duration <= 0f)
+        {
+            SetFadeAlpha(endAlpha);
+            yield break;
+        }
+
+        while (elapsed < duration)
         {
             elapsed += Time.unscaledDeltaTime;
 
-            float t = Mathf.Clamp01(elapsed / fadeDuration);
+            float t = Mathf.Clamp01(elapsed / duration);
             t = Mathf.SmoothStep(0f, 1f, t);
 
             SetFadeAlpha(Mathf.Lerp(startAlpha, endAlpha, t));
@@ -130,5 +146,13 @@ public class SceneTransitionManager : MonoBehaviour
         Color color = dialogueText.color;
         color.a = alpha;
         dialogueText.color = color;
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 }

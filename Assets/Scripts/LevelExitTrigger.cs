@@ -1,41 +1,58 @@
-
 using UnityEngine;
 
 public class LevelExitTrigger : MonoBehaviour
 {
     [Header("Entity Dialogue")]
-    [SerializeField]
-    private string entityLine = "Where do you think you're going?";
+    [SerializeField] private string entityLine = "Where do you think you're going?";
 
     [Header("Next Level")]
-    [SerializeField]
-    private string nextSceneName = "Level_2";
+    [SerializeField] private string nextSceneName = "Level_2";
+
+    [Header("UI state manager")]
+    [SerializeField] private UIStateManager uiStateManager;
 
     private bool triggered;
 
     private void OnTriggerEnter(Collider other)
     {
-        // Support colliders attached to child objects of the Player.
-        Transform player = other.transform;
+        if (!IsPlayerCollider(other))
+            return;
 
-        while (player != null && !player.CompareTag("Player"))
+        if (triggered)
+            return;
+
+        if (SceneTransitionManager.Instance == null)
         {
-            player = player.parent;
+            Debug.LogError(
+                "LevelExitTrigger: SceneTransitionManager is missing!", this
+            );
+            return;
         }
 
-        if (player == null) return;
-
-        if (triggered) return;
+        triggered = true;
 
         Debug.Log("Player entered the exit gate!");
 
-        if (SceneTransitionManager.Instance == null) return;
-
-        triggered = true;
+        uiStateManager.ShowCompleted();
 
         SceneTransitionManager.Instance.PlayLineAndLoadScene(
             entityLine,
             nextSceneName
         );
+    }
+
+    private bool IsPlayerCollider(Collider other)
+    {
+        Transform current = other.transform;
+
+        while (current != null)
+        {
+            if (current.CompareTag("Player"))
+                return true;
+
+            current = current.parent;
+        }
+
+        return false;
     }
 }

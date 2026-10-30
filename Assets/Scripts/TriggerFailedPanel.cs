@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public class TriggerFailedPanel : MonoBehaviour
@@ -24,18 +23,8 @@ public class TriggerFailedPanel : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(
-            "Trigger entered by: " + other.name, this
-        );
-
-        Transform player = other.transform;
-
-        if (!player.CompareTag("Player") &&
-            (player.root == null || !player.root.CompareTag("Player")))
-        {
-            Debug.Log("Trigger ignored: object is not tagged Player.", this);
+        if (!IsPlayerCollider(other))
             return;
-        }
 
         if (triggerOnlyOnce && triggered)
             return;
@@ -44,14 +33,26 @@ public class TriggerFailedPanel : MonoBehaviour
             return;
 
         triggered = true;
-
         failedPanel.SetActive(true);
-        Debug.Log("FailedPanel activated by trigger!", this);
 
         if (stopGame)
         {
             Time.timeScale = 0f;
         }
     }
+
+    private bool IsPlayerCollider(Collider other)
+    {
+        Transform current = other.transform;
+
+        while (current != null)
+        {
+            if (current.CompareTag("Player"))
+                return true;
+
+            current = current.parent;
+        }
+
+        return false;
+    }
 }
-    

@@ -3,15 +3,37 @@ using UnityEngine.SceneManagement;
 
 public class RestartTrigger : MonoBehaviour
 {
-    [SerializeField] private GameObject failPanel;
-
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Player"))
+        if (!IsPlayerCollider(other))
+            return;
+
+        if (GameManager.Instance != null)
         {
-            Time.timeScale = 1f;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            GameManager.Instance.RestartLevel();
+            return;
         }
-        else return;
+
+        // Fallback for scenes without a GameManager.
+        Time.timeScale = 1f;
+
+        SceneManager.LoadScene(
+            SceneManager.GetActiveScene().buildIndex
+        );
+    }
+
+    private bool IsPlayerCollider(Collider other)
+    {
+        Transform current = other.transform;
+
+        while (current != null)
+        {
+            if (current.CompareTag("Player"))
+                return true;
+
+            current = current.parent;
+        }
+
+        return false;
     }
 }

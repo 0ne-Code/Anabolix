@@ -147,7 +147,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""SelectPhase"",
+                    ""name"": ""SelectRewind"",
                     ""type"": ""Button"",
                     ""id"": ""cc3762b1-b80a-4a40-ae37-3f0e0961b899"",
                     ""expectedControlType"": """",
@@ -338,7 +338,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""SelectPhase"",
+                    ""action"": ""SelectRewind"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -366,7 +366,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_SelectGravity = m_Player.FindAction("SelectGravity", throwIfNotFound: true);
         m_Player_SelectTime = m_Player.FindAction("SelectTime", throwIfNotFound: true);
-        m_Player_SelectPhase = m_Player.FindAction("SelectPhase", throwIfNotFound: true);
+        m_Player_SelectRewind = m_Player.FindAction("SelectRewind", throwIfNotFound: true);
         m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
     }
 
@@ -454,7 +454,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_SelectGravity;
     private readonly InputAction m_Player_SelectTime;
-    private readonly InputAction m_Player_SelectPhase;
+    private readonly InputAction m_Player_SelectRewind;
     private readonly InputAction m_Player_Attack;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
@@ -492,9 +492,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @SelectTime => m_Wrapper.m_Player_SelectTime;
         /// <summary>
-        /// Provides access to the underlying input action "Player/SelectPhase".
+        /// Provides access to the underlying input action "Player/SelectRewind".
         /// </summary>
-        public InputAction @SelectPhase => m_Wrapper.m_Player_SelectPhase;
+        public InputAction @SelectRewind => m_Wrapper.m_Player_SelectRewind;
         /// <summary>
         /// Provides access to the underlying input action "Player/Attack".
         /// </summary>
@@ -543,9 +543,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @SelectTime.started += instance.OnSelectTime;
             @SelectTime.performed += instance.OnSelectTime;
             @SelectTime.canceled += instance.OnSelectTime;
-            @SelectPhase.started += instance.OnSelectPhase;
-            @SelectPhase.performed += instance.OnSelectPhase;
-            @SelectPhase.canceled += instance.OnSelectPhase;
+            @SelectRewind.started += instance.OnSelectRewind;
+            @SelectRewind.performed += instance.OnSelectRewind;
+            @SelectRewind.canceled += instance.OnSelectRewind;
             @Attack.started += instance.OnAttack;
             @Attack.performed += instance.OnAttack;
             @Attack.canceled += instance.OnAttack;
@@ -578,9 +578,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @SelectTime.started -= instance.OnSelectTime;
             @SelectTime.performed -= instance.OnSelectTime;
             @SelectTime.canceled -= instance.OnSelectTime;
-            @SelectPhase.started -= instance.OnSelectPhase;
-            @SelectPhase.performed -= instance.OnSelectPhase;
-            @SelectPhase.canceled -= instance.OnSelectPhase;
+            @SelectRewind.started -= instance.OnSelectRewind;
+            @SelectRewind.performed -= instance.OnSelectRewind;
+            @SelectRewind.canceled -= instance.OnSelectRewind;
             @Attack.started -= instance.OnAttack;
             @Attack.performed -= instance.OnAttack;
             @Attack.canceled -= instance.OnAttack;
@@ -667,12 +667,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSelectTime(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "SelectPhase" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "SelectRewind" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnSelectPhase(InputAction.CallbackContext context);
+        void OnSelectRewind(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Attack" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

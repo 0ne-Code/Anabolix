@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -12,10 +11,22 @@ public class PauseMenuManager : MonoBehaviour
     [Header("Main Menu")]
     [SerializeField] private string mainMenuScene = "MainMenu";
 
+    [Header("UI State")]
+    [SerializeField] private UIStateManager uiStateManager;
+
     private bool isPaused;
 
     private void Start()
     {
+        if (pausePanel == null || settingsPanel == null)
+        {
+            Debug.LogError(
+                "PauseMenuManager: Assign both UI panels!", this
+            );
+            enabled = false;
+            return;
+        }
+
         Time.timeScale = 1f;
 
         pausePanel.SetActive(false);
@@ -27,34 +38,36 @@ public class PauseMenuManager : MonoBehaviour
 
     private void Update()
     {
-        if (Keyboard.current != null &&
-            Keyboard.current.escapeKey.wasPressedThisFrame)
+        if (Keyboard.current == null ||
+            !Keyboard.current.escapeKey.wasPressedThisFrame)
         {
-            if (isPaused)
-            {
-                // Close Settings first if it is open.
-                if (settingsPanel.activeSelf)
-                {
-                    CloseSettings();
-                }
-                else
-                {
-                    ResumeGame();
-                }
-            }
-            else
-            {
-                PauseGame();
-            }
+            return;
+        }
+
+        if (!isPaused)
+        {
+            PauseGame();
+        }
+        else if (settingsPanel.activeSelf)
+        {
+            CloseSettings();
+        }
+        else
+        {
+            ResumeGame();
         }
     }
 
     public void PauseGame()
     {
+        if (pausePanel == null || settingsPanel == null || isPaused)
+            return;
+
         settingsPanel.SetActive(false);
 
         isPaused = true;
-        Time.timeScale = 0f;
+
+        uiStateManager.ShowPaused();
 
         pausePanel.SetActive(true);
 
@@ -62,13 +75,18 @@ public class PauseMenuManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
     }
 
+
     public void ResumeGame()
     {
+        if (pausePanel == null || settingsPanel == null)
+            return;
+
         settingsPanel.SetActive(false);
         pausePanel.SetActive(false);
 
         isPaused = false;
-        Time.timeScale = 1f;
+
+        uiStateManager.ShowPlaying();
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -76,18 +94,32 @@ public class PauseMenuManager : MonoBehaviour
 
     public void OpenSettings()
     {
+        if (!isPaused || pausePanel == null || settingsPanel == null)
+            return;
+
         pausePanel.SetActive(false);
         settingsPanel.SetActive(true);
     }
 
     public void CloseSettings()
     {
+        if (pausePanel == null || settingsPanel == null)
+            return;
+
         settingsPanel.SetActive(false);
         pausePanel.SetActive(true);
     }
 
     public void ExitToMainMenu()
     {
+        if (string.IsNullOrWhiteSpace(mainMenuScene))
+        {
+            Debug.LogError(
+                "PauseMenuManager: Main menu scene is empty!", this
+            );
+            return;
+        }
+
         Time.timeScale = 1f;
         SceneManager.LoadScene(mainMenuScene);
     }
