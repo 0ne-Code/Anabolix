@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
@@ -11,6 +10,7 @@ public class GameManager : MonoBehaviour
 
     private Transform player;
     private bool isRestarting;
+    private PlayerInputActions playerInput;
 
     private void Awake()
     {
@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
         }
 
         Instance = this;
+        playerInput = new PlayerInputActions();
     }
 
     private void Start()
@@ -28,9 +29,37 @@ public class GameManager : MonoBehaviour
         CachePlayer();
     }
 
+    private void OnEnable()
+    {
+        if (playerInput == null)
+            return;
+
+        playerInput.Player.Restart.performed += OnRestart;
+        playerInput.Player.Enable();
+    }
+
+    private void OnDisable()
+    {
+        if (playerInput == null)
+            return;
+
+        playerInput.Player.Restart.performed -= OnRestart;
+        playerInput.Player.Disable();
+    }
+
+    private void OnRestart(InputAction.CallbackContext context)
+    {
+        //if (Time.timeScale == 0f)
+        //    return;
+
+        RestartLevel();
+    }
+
     private void Update()
     {
-        // Retry only while the Player reference is unavailable.
+        if (isRestarting)
+            return;
+
         if (player == null)
         {
             CachePlayer();
@@ -39,19 +68,13 @@ public class GameManager : MonoBehaviour
         if (player != null && player.position.y <= voidHeight)
         {
             RestartLevel();
-            return;
-        }
-
-        if (Keyboard.current != null &&
-            Keyboard.current.rKey.wasPressedThisFrame)
-        {
-            RestartLevel();
         }
     }
 
     private void CachePlayer()
     {
-        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        GameObject playerObject =
+            GameObject.FindGameObjectWithTag("Player");
 
         if (playerObject != null)
         {
@@ -64,20 +87,28 @@ public class GameManager : MonoBehaviour
         if (isRestarting)
             return;
 
-        isRestarting = true;
+        if (SceneTransitionManager.Instance == null)
+        {
+            Debug.LogError(
+                "GameManager: SceneTransitionManager is missing!",
+                this
+            );
+            return;
+        }
 
-        Time.timeScale = 1f;
-
-        SceneManager.LoadScene(
-            SceneManager.GetActiveScene().buildIndex
-        );
-
-        // Do not reset isRestarting here.
-        // This scene's GameManager will be destroyed during reloading.
+        if (SceneTransitionManager.Instance.ReloadCurrentScene())
+        {
+            isRestarting = true;
+        }
     }
 
     private void OnDestroy()
     {
+        if (playerInput != null)
+        {
+            playerInput.Dispose();
+        }
+
         if (Instance == this)
         {
             Instance = null;

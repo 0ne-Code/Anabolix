@@ -13,6 +13,7 @@ public class AbilityTarget : MonoBehaviour
     [SerializeField] private CeilingObject ceilingObject;
     [SerializeField] private BackAndForthBarrier backAndForthBarrier;
     [SerializeField] private ObjectRewind objectRewind;
+    [SerializeField] private PuzzleGear puzzleGear;
 
     private bool gravityInverted;
     public bool GravityInverted => gravityInverted;
@@ -92,6 +93,13 @@ public class AbilityTarget : MonoBehaviour
         if (backAndForthBarrier != null)
         {
             backAndForthBarrier.ToggleFreeze();
+            return;
+        }
+
+        if (puzzleGear != null)
+        {
+            timeFrozen = !timeFrozen;
+            puzzleGear.SetFrozen(timeFrozen);
             return;
         }
 

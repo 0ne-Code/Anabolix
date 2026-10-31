@@ -142,7 +142,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Where do you think you are going?
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -226,6 +226,7 @@ GameObject:
   - component: {fileID: 9107141119263288243}
   - component: {fileID: 5273974731230049438}
   - component: {fileID: 3412403594760829846}
+  - component: {fileID: 332680176842445435}
   m_Layer: 5
   m_Name: TransitionCanvas
   m_TagString: Untagged
@@ -316,6 +317,22 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &332680176842445435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5892271179590344305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1d43f1ba2933aa4abec2b50cd8997ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SceneTransitionManager
+  fadeImage: {fileID: 6706857870368820996}
+  dialogueText: {fileID: 6709520096494194059}
+  fadeDuration: 1
+  dialogueDuration: 2.5
 --- !u!1 &6770967038019772972
 GameObject:
   m_ObjectHideFlags: 0
@@ -333,7 +350,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5411110110073783810
 RectTransform:
   m_ObjectHideFlags: 0
@@ -374,7 +391,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.08718402, g: 0.08771554, b: 0.11698109, a: 1}
+  m_Color: {r: 0.08718402, g: 0.08771554, b: 0.11698109, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

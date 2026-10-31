@@ -15,6 +15,12 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private UIStateManager uiStateManager;
 
     private bool isPaused;
+    private PlayerInputActions playerInput;
+
+    private void Awake()
+    {
+        playerInput = new PlayerInputActions();
+    }
 
     private void Start()
     {
@@ -36,14 +42,26 @@ public class PauseMenuManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    private void Update()
+    private void OnEnable()
     {
-        if (Keyboard.current == null ||
-            !Keyboard.current.escapeKey.wasPressedThisFrame)
-        {
+        if (playerInput == null)
             return;
-        }
 
+        playerInput.Player.Pause.performed += OnPause;
+        playerInput.Player.Enable();
+    }
+
+    private void OnDisable()
+    {
+        if (playerInput == null)
+            return;
+
+        playerInput.Player.Pause.performed -= OnPause;
+        playerInput.Player.Disable();
+    }
+
+    private void OnPause(InputAction.CallbackContext context)
+    {
         if (!isPaused)
         {
             PauseGame();
@@ -57,6 +75,33 @@ public class PauseMenuManager : MonoBehaviour
             ResumeGame();
         }
     }
+
+    private void OnDestroy()
+    {
+        playerInput?.Dispose();
+    }
+
+    //private void Update()
+    //{
+    //    if (Keyboard.current == null ||
+    //        !Keyboard.current.escapeKey.wasPressedThisFrame)
+    //    {
+    //        return;
+    //    }
+
+    //    if (!isPaused)
+    //    {
+    //        PauseGame();
+    //    }
+    //    else if (settingsPanel.activeSelf)
+    //    {
+    //        CloseSettings();
+    //    }
+    //    else
+    //    {
+    //        ResumeGame();
+    //    }
+    //}
 
     public void PauseGame()
     {
@@ -115,12 +160,23 @@ public class PauseMenuManager : MonoBehaviour
         if (string.IsNullOrWhiteSpace(mainMenuScene))
         {
             Debug.LogError(
-                "PauseMenuManager: Main menu scene is empty!", this
+                "PauseMenuManager: Main menu scene is empty!",
+                this
             );
             return;
         }
 
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(mainMenuScene);
+        if (SceneTransitionManager.Instance == null)
+        {
+            Debug.LogError(
+                "PauseMenuManager: SceneTransitionManager is missing!",
+                this
+            );
+            return;
+        }
+
+        SceneTransitionManager.Instance.LoadSceneWithTransition(
+            mainMenuScene
+        );
     }
 }

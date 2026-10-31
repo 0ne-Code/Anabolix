@@ -1,5 +1,7 @@
+
 using UnityEngine;
 using UnityEngine.InputSystem;
+
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement")]
@@ -19,42 +21,63 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask layerMask;
 
     private const float gravity = -19.62f;
+
     [SerializeField] private MouseLook mouseLook;
+    [SerializeField] private Rigidbody rb;
 
-    private Rigidbody rb;
     private PlayerInputActions playerInput;
-
+    private bool movementLocked;
 
     void Awake()
     {
         playerInput = new PlayerInputActions();
-        rb = GetComponent<Rigidbody>();
 
         rb.useGravity = false;
         rb.constraints = RigidbodyConstraints.FreezeRotation;
 
         currentSpeed = moveSpeed;
     }
+
     void OnEnable()
     {
         playerInput.Player.Enable();
         playerInput.Player.Jump.performed += HandleJump;
     }
+
     void HandleJump(InputAction.CallbackContext ctx)
     {
-        if (isGrounded) verticalVel = jumpForce;
+        if (movementLocked)
+            return;
+
+        if (isGrounded)
+            verticalVel = jumpForce;
     }
+
     void OnDisable()
     {
         playerInput.Player.Jump.performed -= HandleJump;
         playerInput.Player.Disable();
     }
+
     void FixedUpdate()
     {
         CheckGrounded();
         HandleGravity();
+
+        if (movementLocked)
+        {
+            rb.linearVelocity = new Vector3(
+                0f,
+                verticalVel,
+                0f
+            );
+
+            return;
+        }
+
         HandleMovement();
     }
+
     void HandleMovement()
     {
         float inputX;
@@ -63,46 +86,82 @@ public class PlayerController : MonoBehaviour
         Vector2 moveInput = playerInput.Player.Move.ReadValue<Vector2>();
 
         bool sprinting = playerInput.Player.Sprint.IsPressed();
-        float targetSpeed = sprinting ? (moveSpeed * sprintMultiplier) : moveSpeed;
+        float targetSpeed = sprinting
+            ? (moveSpeed * sprintMultiplier)
+            : moveSpeed;
 
-        currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, sprintTransitionSpeed * Time.fixedDeltaTime);
+        currentSpeed = Mathf.Lerp(
+            currentSpeed,
+            targetSpeed,
+            sprintTransitionSpeed * Time.fixedDeltaTime
+        );
 
         float airControl = isGrounded ? 1f : 0.7f;
+
         inputX = moveInput.x * currentSpeed * airControl;
         inputY = moveInput.y * currentSpeed * airControl;
 
-        Vector3 currentLocalVel = new Vector3(rb.linearVelocity.x, verticalVel, rb.linearVelocity.z);
-        Vector3 localVel = Quaternion.Euler(0f, mouseLook.currentYaw, 0f) * new Vector3(inputX, 0f, inputY);
+        Vector3 currentLocalVel = new Vector3(
+            rb.linearVelocity.x,
+            verticalVel,
+            rb.linearVelocity.z
+        );
+
+        Vector3 localVel = Quaternion.Euler(
+            0f,
+            mouseLook.currentYaw,
+            0f
+        ) * new Vector3(inputX, 0f, inputY);
 
         localVel.y = verticalVel;
 
         if (!isGrounded)
         {
-            rb.linearVelocity = Vector3.Lerp(currentLocalVel, localVel, 3f * Time.fixedDeltaTime);
+            rb.linearVelocity = Vector3.Lerp(
+                currentLocalVel,
+                localVel,
+                3f * Time.fixedDeltaTime
+            );
         }
         else
         {
-            rb.linearVelocity = localVel;            
+            rb.linearVelocity = localVel;
         }
-
     }
+
     void HandleGravity()
     {
-        if (isGrounded && verticalVel < 0f) verticalVel = -1f;
-        else verticalVel += gravity * Time.fixedDeltaTime;
+        if (isGrounded && verticalVel < 0f)
+            verticalVel = -1f;
+        else
+            verticalVel += gravity * Time.fixedDeltaTime;
     }
+
     void CheckGrounded()
     {
-        //RaycastHit hitInfo;
         Vector3 castPos = transform.position + (Vector3.down * castPosOffset);
 
-        bool hit = Physics.CheckSphere(castPos, sphereRadius, layerMask);
-
-        isGrounded = hit;
+        isGrounded = Physics.CheckSphere(
+            castPos,
+            sphereRadius,
+            layerMask
+        );
     }
+
+    public void SetMovementLocked(bool locked)
+    {
+        movementLocked = locked;
+
+        if (locked)
+        {
+            verticalVel = 0f;
+        }
+    }
+
     void OnDrawGizmos()
     {
         Gizmos.color = isGrounded ? Color.blue : Color.red;
+
         Vector3 drawPos = transform.position + (Vector3.down * castPosOffset);
 
         Gizmos.DrawWireSphere(drawPos, sphereRadius);

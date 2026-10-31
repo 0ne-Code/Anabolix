@@ -66,5 +66,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c17960ca937dc54d8a22514fbda59da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TriggerTextDisplay
-  message: I am you, I was the one standing In My Own Way
-  displayDuration: 5
+  dialogueManager: {fileID: 0}
+  dialogueSequence: {fileID: 11400000, guid: d02d458d294d51045b5899c2fac482b6, type: 2}

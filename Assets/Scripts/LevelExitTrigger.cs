@@ -3,28 +3,37 @@ using UnityEngine;
 public class LevelExitTrigger : MonoBehaviour
 {
     [Header("Entity Dialogue")]
-    [SerializeField] private string entityLine = "Where do you think you're going?";
+    [SerializeField]
+    private string entityLine =
+        "Where do you think you're going?";
 
     [Header("Next Level")]
     [SerializeField] private string nextSceneName = "Level_2";
 
-    [Header("UI state manager")]
+    [Header("UI State Manager")]
     [SerializeField] private UIStateManager uiStateManager;
 
     private bool triggered;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!IsPlayerCollider(other))
-            return;
-
-        if (triggered)
+        if (triggered || !IsPlayerCollider(other))
             return;
 
         if (SceneTransitionManager.Instance == null)
         {
             Debug.LogError(
-                "LevelExitTrigger: SceneTransitionManager is missing!", this
+                "LevelExitTrigger: SceneTransitionManager is missing!",
+                this
+            );
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(nextSceneName))
+        {
+            Debug.LogError(
+                "LevelExitTrigger: Next scene name is empty!",
+                this
             );
             return;
         }
@@ -33,7 +42,10 @@ public class LevelExitTrigger : MonoBehaviour
 
         Debug.Log("Player entered the exit gate!");
 
-        uiStateManager.ShowCompleted();
+        if (uiStateManager != null)
+        {
+            uiStateManager.ShowCompleted();
+        }
 
         SceneTransitionManager.Instance.PlayLineAndLoadScene(
             entityLine,

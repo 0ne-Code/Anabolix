@@ -33,7 +33,7 @@ public class SceneTransitionManager : MonoBehaviour
 
         if (canvas != null)
         {
-            canvas.sortingOrder = 999;
+            canvas.sortingOrder = 10;
         }
 
         SetFadeAlpha(1f);
@@ -42,51 +42,97 @@ public class SceneTransitionManager : MonoBehaviour
 
     private IEnumerator Start()
     {
-        yield return Fade(1f, 0f);
-    }
-
-    public void PlayLineAndLoadScene(string line, string nextScene)
-    {
-        if (transitionInProgress)
-            return;
-
-        if (string.IsNullOrWhiteSpace(nextScene))
-        {
-            Debug.LogError("SceneTransitionManager: Next scene is empty!", this);
-            return;
-        }
-
-        StartCoroutine(TransitionRoutine(line, nextScene));
-    }
-
-    private IEnumerator TransitionRoutine(string line, string nextScene)
-    {
+        // The first scene also enters through the shared fade system.
         transitionInProgress = true;
 
-        if (dialogueText != null)
+        yield return null;
+
+        Time.timeScale = 1f;
+
+        yield return Fade(1f, 0f);
+
+        transitionInProgress = false;
+    }
+
+    // Use this for loading any scene without dialogue.
+    public void LoadSceneWithTransition(string sceneName)
+    {
+        StartTransition(sceneName, null);
+    }
+
+    // Use this for level completion with entity dialogue.
+    public void PlayLineAndLoadScene(string line, string nextScene)
+    {
+        StartTransition(nextScene, line);
+    }
+
+    // Use this for restarting the current level.
+    public bool ReloadCurrentScene()
+    {
+        string currentScene = SceneManager.GetActiveScene().name;
+        return StartTransition(currentScene, null);
+    }
+
+    private bool StartTransition(string sceneName, string line)
+    {
+        if (transitionInProgress)
+            return false;
+
+        if (string.IsNullOrWhiteSpace(sceneName))
         {
-            dialogueText.text = line;
-            SetDialogueAlpha(1f);
+            Debug.LogError(
+                "SceneTransitionManager: Scene name is empty!",
+                this
+            );
+            return false;
         }
 
-        yield return new WaitForSecondsRealtime(
-            Mathf.Max(0f, dialogueDuration)
-        );
+        transitionInProgress = true;
+        StartCoroutine(TransitionRoutine(sceneName, line));
 
-        SetDialogueAlpha(0f);
+        return true;
+    }
 
+    private IEnumerator TransitionRoutine(string sceneName, string line)
+    {
+        // Keep transitions functional even if gameplay is paused.
+        Time.timeScale = 1f;
+
+        // Show dialogue only when a line was provided.
+        if (!string.IsNullOrEmpty(line))
+        {
+            if (dialogueText != null)
+            {
+                dialogueText.text = line;
+                SetDialogueAlpha(1f);
+            }
+
+            yield return new WaitForSecondsRealtime(
+                Mathf.Max(0f, dialogueDuration)
+            );
+
+            SetDialogueAlpha(0f);
+        }
+
+        // Fade out the current scene.
         yield return Fade(0f, 1f);
 
-        AsyncOperation operation = SceneManager.LoadSceneAsync(nextScene);
+        // Load the requested scene while the screen is black.
+        AsyncOperation operation =
+            SceneManager.LoadSceneAsync(sceneName);
 
         if (operation == null)
         {
             Debug.LogError(
-                "Could not load scene: " + nextScene, this
+                "SceneTransitionManager: Could not load scene: " +
+                sceneName,
+                this
             );
 
-            transitionInProgress = false;
+            Time.timeScale = 1f;
             yield return Fade(1f, 0f);
+
+            transitionInProgress = false;
             yield break;
         }
 
@@ -95,9 +141,16 @@ public class SceneTransitionManager : MonoBehaviour
             yield return null;
         }
 
+        // Allow the new scene's objects and UI to initialize.
+        yield return null;
+
+        Time.timeScale = 1f;
+
+        // Fade into the newly loaded scene.
         yield return Fade(1f, 0f);
 
         transitionInProgress = false;
+        Debug.Log("Transition finished. Lock released.");
     }
 
     private IEnumerator Fade(float startAlpha, float endAlpha)
@@ -136,6 +189,9 @@ public class SceneTransitionManager : MonoBehaviour
         Color color = fadeImage.color;
         color.a = alpha;
         fadeImage.color = color;
+
+        // Only block clicks while the screen is actually fading.
+        fadeImage.raycastTarget = alpha > 0.01f;
     }
 
     private void SetDialogueAlpha(float alpha)
