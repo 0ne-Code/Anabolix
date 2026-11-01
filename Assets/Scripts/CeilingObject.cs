@@ -37,4 +37,15 @@ public class CeilingObject : MonoBehaviour
 
         Debug.Log("Ceiling object released: " + gameObject.name);
     }
+
+    public void ResetToCeiling()
+    {
+        hasBeenReleased = false;
+
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
+        rb.useGravity = false;
+        rb.isKinematic = true;
+    }
 }

@@ -1,5 +1,6 @@
 
 using UnityEngine;
+using System.Collections;
 
 public class CubePieceSlot : MonoBehaviour, IInteractable
 {
@@ -21,10 +22,30 @@ public class CubePieceSlot : MonoBehaviour, IInteractable
     [SerializeField] private DialogueManager dialogueManager;
     [SerializeField] private DialogueSequence finalDialogue;
 
+    [Header("Door")]
+    [SerializeField] private Transform door;
+    [SerializeField] private float doorOpenHeight = 4f;
+    [SerializeField] private float doorOpenSpeed = 2f;
+
+    private Vector3 doorClosedPosition;
+    private Vector3 doorOpenPosition;
+
     private bool completionTriggered;
+
+    private void Awake()
+    {
+        if (door != null)
+        {
+            doorClosedPosition = door.position;
+            doorOpenPosition = doorClosedPosition + Vector3.up * doorOpenHeight;
+        }
+    }
 
     public string GetInteractionPrompt()
     {
+        if (completionTriggered)
+            return "";
+
         foreach (PieceSlot piece in pieces)
         {
             if (piece == null || piece.isPlaced)
@@ -37,11 +58,14 @@ public class CubePieceSlot : MonoBehaviour, IInteractable
             }
         }
 
-        return "";
+        return "Find the missing pieces";
     }
 
     public void Interact()
     {
+        if (completionTriggered)
+            return;
+
         foreach (PieceSlot piece in pieces)
         {
             if (piece == null || piece.isPlaced)
@@ -54,6 +78,8 @@ public class CubePieceSlot : MonoBehaviour, IInteractable
                 return;
             }
         }
+
+        Debug.Log("Find the missing pieces!");
     }
 
     private void PlacePiece(PieceSlot piece)
@@ -86,15 +112,30 @@ public class CubePieceSlot : MonoBehaviour, IInteractable
 
         completionTriggered = true;
 
-        Debug.Log("All cube pieces placed! Final dialogue starting.");
+        Debug.Log("All cube pieces placed!");
+
+        if (door != null)
+            StartCoroutine(OpenDoor());
 
         if (dialogueManager != null && finalDialogue != null)
-        {
             dialogueManager.PlayDialogue(finalDialogue);
-        }
         else
-        {
             Debug.LogError("DialogueManager or Final Dialogue is missing!");
+    }
+
+    private IEnumerator OpenDoor()
+    {
+        while (Vector3.Distance(door.position, doorOpenPosition) > 0.01f)
+        {
+            door.position = Vector3.MoveTowards(
+                door.position,
+                doorOpenPosition,
+                doorOpenSpeed * Time.deltaTime
+            );
+
+            yield return null;
         }
+
+        door.position = doorOpenPosition;
     }
 }

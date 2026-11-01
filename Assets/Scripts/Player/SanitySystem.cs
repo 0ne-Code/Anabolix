@@ -18,6 +18,8 @@ public class SanitySystem : MonoBehaviour
 
     public event Action GameOver;
 
+    private bool isDialoguePlaying;
+
     private void Awake()
     {
         maxSanity = Mathf.Max(0f, maxSanity);
@@ -25,6 +27,11 @@ public class SanitySystem : MonoBehaviour
 
         if (currentSanity <= 0f)
             SetGameOver();
+    }
+
+    public void SetDialogueState(bool isPlaying)
+    {
+        isDialoguePlaying = isPlaying;
     }
 
     public void ChangeSanity(float amount)
@@ -49,7 +56,7 @@ public class SanitySystem : MonoBehaviour
 
     private void Update()
     {
-        if (!IsGameOver && Time.timeScale > 0f)
+        if (!IsGameOver && !isDialoguePlaying && Time.timeScale > 0f)
         {
             ChangeSanity(-sanityDrainPerSecond * Time.deltaTime);
         }

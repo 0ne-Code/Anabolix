@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -14,6 +13,9 @@ public class PuzzleGear : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+
+        rb.isKinematic = true;
+        rb.useGravity = false;
     }
 
     private void FixedUpdate()
@@ -34,5 +36,7 @@ public class PuzzleGear : MonoBehaviour
     public void SetFrozen(bool frozen)
     {
         isFrozen = frozen;
+
+        rb.isKinematic = frozen;
     }
 }

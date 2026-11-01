@@ -36,6 +36,14 @@ public class PlayerInteraction : MonoBehaviour
         if (inputActions.Player.Interact.WasPressedThisFrame())
         {
             currentInteractable.Interact();
+
+            // Check whether the interactable was disabled or destroyed.
+            if (currentInteractable is MonoBehaviour interactableObject &&
+                !interactableObject.isActiveAndEnabled)
+            {
+                currentInteractable = null;
+                interactionUI.HidePrompt();
+            }
         }
     }
 

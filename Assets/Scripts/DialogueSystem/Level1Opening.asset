@@ -14,20 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
   lines:
   - speaker: 0
-    dialogue: 1
-    duration: 2
+    dialogue: Where am I? Why can't I remember anything?
+    duration: 5
   - speaker: 1
-    dialogue: 2
-    duration: 2
+    dialogue: Stay down. You will only fail again.
+    duration: 5
   - speaker: 0
-    dialogue: 3
-    duration: 2
+    dialogue: Who's there? Why am i so scared to move?
+    duration: 5
   - speaker: 1
-    dialogue: 4
-    duration: 2
+    dialogue: Everyone is ahead of you. You're too late.
+    duration: 5
   - speaker: 0
-    dialogue: 5
-    duration: 2
+    dialogue: I can't do this, i don't even know what "this" is.
+    duration: 5
   - speaker: 1
-    dialogue: 6
-    duration: 2
+    dialogue: Good. Keep saying it. You are so good at it.
+    duration: 5

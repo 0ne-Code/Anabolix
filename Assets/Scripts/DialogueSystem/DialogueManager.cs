@@ -15,6 +15,14 @@ public class DialogueManager : MonoBehaviour
     [Header("Player Reference")]
     [SerializeField] private PlayerController playerController;
 
+    [Header("Sanity Reference")]
+    [SerializeField] private SanitySystem sanitySystem;
+
+    [Header("Entity Voice")]
+    [SerializeField] private AudioSource entityAudioSource;
+    [SerializeField] private AudioClip entityVoiceClip;
+    [SerializeField, Range(0f, 1f)] private float entityVoiceVolume = 0.7f;
+
     private DialogueSequence currentSequence;
     private Coroutine dialogueRoutine;
     private bool skipRequested;
@@ -55,6 +63,9 @@ public class DialogueManager : MonoBehaviour
         if (playerController != null)
             playerController.SetMovementLocked(true);
 
+        if (sanitySystem != null)
+            sanitySystem.SetDialogueState(true);
+
         dialogueRoutine = StartCoroutine(PlayDialogueSequence());
     }
 
@@ -64,6 +75,13 @@ public class DialogueManager : MonoBehaviour
         {
             speakerName.text = line.speaker.ToString();
             dialogueText.text = line.dialogue;
+
+            if (line.speaker == DialogueSpeaker.Entity &&
+            entityAudioSource != null &&
+            entityVoiceClip != null)
+            {
+                entityAudioSource.PlayOneShot(entityVoiceClip, entityVoiceVolume);
+            }
 
             skipRequested = false;
 
@@ -80,6 +98,9 @@ public class DialogueManager : MonoBehaviour
 
         if (playerController != null)
             playerController.SetMovementLocked(false);
+
+        if (sanitySystem != null)
+            sanitySystem.SetDialogueState(false);
 
         currentSequence = null;
         dialogueRoutine = null;

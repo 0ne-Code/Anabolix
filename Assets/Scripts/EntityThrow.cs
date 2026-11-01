@@ -1,10 +1,17 @@
+
 using System.Collections;
 using UnityEngine;
 
 public class EntityThrow : MonoBehaviour
 {
+    [Header("Trigger")]
+    [SerializeField] private Collider activationTrigger;
+
     [Header("Target")]
     [SerializeField] private Rigidbody boxRigidbody;
+
+    [Header("Player")]
+    [SerializeField] private PlayerController playerController;
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 2f;
@@ -19,11 +26,72 @@ public class EntityThrow : MonoBehaviour
     [SerializeField] private float throwForce = 8f;
     [SerializeField] private float upwardForce = 2f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip entityAppearanceSound;
+
     private bool sequenceStarted;
 
-    private void Start()
+    private void Awake()
     {
+        if (activationTrigger == null)
+        {
+            Debug.LogError("EntityThrow: Activation Trigger is missing!", this);
+            return;
+        }
+
+        if (!activationTrigger.isTrigger)
+        {
+            Debug.LogError("EntityThrow: Assigned Collider must have Is Trigger enabled!", this);
+            return;
+        }
+
+        // Subscribe to trigger detection through a helper component.
+        EntityActivationTrigger trigger =
+            activationTrigger.GetComponent<EntityActivationTrigger>();
+
+        if (trigger == null)
+            trigger = activationTrigger.gameObject.AddComponent<EntityActivationTrigger>();
+
+        trigger.Initialize(this);
+    }
+
+    public void ActivateSequence(Collider other)
+    {
+        if (sequenceStarted || !IsPlayer(other))
+            return;
+
+        if (boxRigidbody == null || playerController == null)
+        {
+            Debug.LogError("EntityThrow: Missing references!", this);
+            return;
+        }
+
+        sequenceStarted = true;
+        activationTrigger.enabled = false;
+
+        if (audioSource != null && entityAppearanceSound != null)
+        {
+            audioSource.PlayOneShot(entityAppearanceSound);
+        }
+
+        playerController.SetMovementLocked(true);
         StartCoroutine(ThrowSequence());
+    }
+
+    private bool IsPlayer(Collider other)
+    {
+        Transform current = other.transform;
+
+        while (current != null)
+        {
+            if (current.CompareTag("Player"))
+                return true;
+
+            current = current.parent;
+        }
+
+        return false;
     }
 
     private IEnumerator ThrowSequence()
@@ -38,7 +106,6 @@ public class EntityThrow : MonoBehaviour
             if (direction.sqrMagnitude > 0.001f)
             {
                 direction.Normalize();
-
                 transform.position += direction * moveSpeed * Time.deltaTime;
                 transform.forward = direction;
             }
@@ -53,16 +120,11 @@ public class EntityThrow : MonoBehaviour
         yield return new WaitForSeconds(disappearDelay);
 
         gameObject.SetActive(false);
+        playerController.SetMovementLocked(false);
     }
 
     private void ThrowBox()
     {
-        if (boxRigidbody == null)
-        {
-            Debug.LogError("EntityThrow: Box Rigidbody is missing!", this);
-            return;
-        }
-
         Vector3 direction = boxRigidbody.position - transform.position;
         direction.y = 0f;
 
@@ -75,5 +137,21 @@ public class EntityThrow : MonoBehaviour
         force.y += upwardForce;
 
         boxRigidbody.AddForce(force, ForceMode.Impulse);
+    }
+}
+
+public class EntityActivationTrigger : MonoBehaviour
+{
+    private EntityThrow entityThrow;
+
+    public void Initialize(EntityThrow entity)
+    {
+        entityThrow = entity;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (entityThrow != null)
+            entityThrow.ActivateSequence(other);
     }
 }

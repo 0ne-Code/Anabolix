@@ -145,4 +145,13 @@ public class AbilityTarget : MonoBehaviour
         gravityInverted = inverted;
         rb.useGravity = useGravity;
     }
+
+    public void ResetGravityState()
+    {
+        gravityInverted = false;
+        rb.useGravity = originalUseGravity;
+
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+    }
 }

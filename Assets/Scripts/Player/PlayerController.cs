@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
     private bool movementLocked;
     public bool IsGrounded => isGrounded;
     public bool IsSprinting => playerInput.Player.Sprint.IsPressed();
+    public bool IsMoving => playerInput.Player.Move.ReadValue<Vector2>().sqrMagnitude > 0.01f;
     public bool JustJumped { get; private set; }
     public bool JustLanded { get; private set; }
 

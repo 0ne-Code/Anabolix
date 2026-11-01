@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 51da424e7686a61468ec652898dfc714, type: 3}
-  m_Name: FinalDialogue
+  m_Name: Level4FinalDialogue
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
   lines:
   - speaker: 1

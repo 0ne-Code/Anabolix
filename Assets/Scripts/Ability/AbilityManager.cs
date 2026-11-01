@@ -14,9 +14,14 @@ public class AbilityManager : MonoBehaviour
     [Header("Ability Selection")]
     [SerializeField] private Ability selectedAbility;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip abilitySwitchClip;
+
     private PlayerInputActions playerInput;
 
     public Ability SelectedAbility => selectedAbility;
+
 
     private void Awake()
     {
@@ -70,7 +75,16 @@ public class AbilityManager : MonoBehaviour
 
     public void SelectAbility(Ability ability)
     {
+        if (selectedAbility == ability)
+            return;
+
         selectedAbility = ability;
+
+        if (audioSource != null && abilitySwitchClip != null)
+        {
+            audioSource.PlayOneShot(abilitySwitchClip);
+        }
+
         Debug.Log($"Selected Ability: {selectedAbility}");
     }
 }

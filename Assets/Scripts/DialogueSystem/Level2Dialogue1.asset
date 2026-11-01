@@ -14,5 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
   lines:
   - speaker: 1
-    dialogue: adsfd
+    dialogue: What's the point? You're not good enough.
+    duration: 5
+  - speaker: 0
+    dialogue: I don't understand any of this... But I'm still moving.
     duration: 5
