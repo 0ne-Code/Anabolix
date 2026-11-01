@@ -27,6 +27,10 @@ public class PlayerController : MonoBehaviour
 
     private PlayerInputActions playerInput;
     private bool movementLocked;
+    public bool IsGrounded => isGrounded;
+    public bool IsSprinting => playerInput.Player.Sprint.IsPressed();
+    public bool JustJumped { get; private set; }
+    public bool JustLanded { get; private set; }
 
     void Awake()
     {
@@ -50,7 +54,10 @@ public class PlayerController : MonoBehaviour
             return;
 
         if (isGrounded)
+        {
             verticalVel = jumpForce;
+            JustJumped = true;
+        }
     }
 
     void OnDisable()
@@ -61,6 +68,9 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        //JustJumped = false;
+        //JustLanded = false;
+
         CheckGrounded();
         HandleGravity();
 
@@ -139,13 +149,18 @@ public class PlayerController : MonoBehaviour
 
     void CheckGrounded()
     {
-        Vector3 castPos = transform.position + (Vector3.down * castPosOffset);
+        bool wasGrounded = isGrounded;
+
+        Vector3 castPos = transform.position +
+            (Vector3.down * castPosOffset);
 
         isGrounded = Physics.CheckSphere(
             castPos,
             sphereRadius,
             layerMask
         );
+
+        JustLanded = !wasGrounded && isGrounded;
     }
 
     public void SetMovementLocked(bool locked)
@@ -156,6 +171,24 @@ public class PlayerController : MonoBehaviour
         {
             verticalVel = 0f;
         }
+    }
+
+    public bool ConsumeJustJumped()
+    {
+        if (!JustJumped)
+            return false;
+
+        JustJumped = false;
+        return true;
+    }
+
+    public bool ConsumeJustLanded()
+    {
+        if (!JustLanded)
+            return false;
+
+        JustLanded = false;
+        return true;
     }
 
     void OnDrawGizmos()

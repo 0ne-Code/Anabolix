@@ -837,6 +837,7 @@ MonoBehaviour:
   ceilingObject: {fileID: 0}
   backAndForthBarrier: {fileID: 0}
   objectRewind: {fileID: 481902373}
+  puzzleGear: {fileID: 0}
 --- !u!114 &481902373
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1837,6 +1838,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: HUDCanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 3834827015915139851, guid: 9f6f47ab814a24949bd1a80c5f9f1a7a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8683939804312545652, guid: 9f6f47ab814a24949bd1a80c5f9f1a7a, type: 3}
       propertyPath: sanitySystem
       value: 
@@ -2103,6 +2108,7 @@ MonoBehaviour:
   ceilingObject: {fileID: 0}
   backAndForthBarrier: {fileID: 0}
   objectRewind: {fileID: 1001263841}
+  puzzleGear: {fileID: 0}
 --- !u!114 &1001263841
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2481,6 +2487,7 @@ MonoBehaviour:
   ceilingObject: {fileID: 0}
   backAndForthBarrier: {fileID: 0}
   objectRewind: {fileID: 1220352249}
+  puzzleGear: {fileID: 0}
 --- !u!114 &1220352249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3134,6 +3141,7 @@ MonoBehaviour:
   ceilingObject: {fileID: 0}
   backAndForthBarrier: {fileID: 0}
   objectRewind: {fileID: 1556831009}
+  puzzleGear: {fileID: 0}
 --- !u!1001 &1634736936
 PrefabInstance:
   m_ObjectHideFlags: 0
