@@ -14,17 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
   lines:
   - speaker: 1
-    dialogue: 11
-    duration: 2
+    dialogue: Don't go. They'll all se you fail
+    duration: 5
   - speaker: 0
-    dialogue: 22
-    duration: 2
+    dialogue: Wait. All these words you're saying are my words. I thought about them
+      before.
+    duration: 7
   - speaker: 1
-    dialogue: 33
-    duration: 2
+    dialogue: Stop. Don't say it.
+    duration: 5
   - speaker: 0
-    dialogue: 44
-    duration: 2
+    dialogue: You were never someone else. The one who held me back... was me.
+    duration: 5
   - speaker: 0
-    dialogue: 55
-    duration: 2
+    dialogue: All this time, I was standing In My Own Way
+    duration: 5

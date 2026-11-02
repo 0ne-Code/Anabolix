@@ -29,6 +29,7 @@ public class EntityThrow : MonoBehaviour
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip entityAppearanceSound;
+    [SerializeField, Range(0f, 1f)] private float appearanceVolume = 1f;
 
     private bool sequenceStarted;
 
@@ -46,7 +47,6 @@ public class EntityThrow : MonoBehaviour
             return;
         }
 
-        // Subscribe to trigger detection through a helper component.
         EntityActivationTrigger trigger =
             activationTrigger.GetComponent<EntityActivationTrigger>();
 
@@ -71,9 +71,7 @@ public class EntityThrow : MonoBehaviour
         activationTrigger.enabled = false;
 
         if (audioSource != null && entityAppearanceSound != null)
-        {
-            audioSource.PlayOneShot(entityAppearanceSound);
-        }
+            audioSource.PlayOneShot(entityAppearanceSound, appearanceVolume);
 
         playerController.SetMovementLocked(true);
         StartCoroutine(ThrowSequence());

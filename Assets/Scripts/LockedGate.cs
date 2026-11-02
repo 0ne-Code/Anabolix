@@ -1,5 +1,6 @@
 
 using UnityEngine;
+using System.Collections;
 
 public class LockedGate : MonoBehaviour, IInteractable
 {
@@ -10,6 +11,10 @@ public class LockedGate : MonoBehaviour, IInteractable
     [Header("Gate Settings")]
     [SerializeField] private float openHeight = 4f;
     [SerializeField] private float openSpeed = 2f;
+
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip unlockSFX;
 
     private Vector3 closedPosition;
     private Vector3 openPosition;
@@ -40,10 +45,14 @@ public class LockedGate : MonoBehaviour, IInteractable
         }
 
         isOpen = true;
+
+        if (audioSource != null && unlockSFX != null)
+            audioSource.PlayOneShot(unlockSFX);
+
         StartCoroutine(OpenGate());
     }
 
-    private System.Collections.IEnumerator OpenGate()
+    private IEnumerator OpenGate()
     {
         while (Vector3.Distance(gate.position, openPosition) > 0.01f)
         {

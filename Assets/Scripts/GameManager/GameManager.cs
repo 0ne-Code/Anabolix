@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,6 +8,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Level Settings")]
     [SerializeField] private float voidHeight = -20f;
+    [SerializeField] private float maximumHeight = 100f;
 
     private Transform player;
     private bool isRestarting;
@@ -49,9 +51,6 @@ public class GameManager : MonoBehaviour
 
     private void OnRestart(InputAction.CallbackContext context)
     {
-        //if (Time.timeScale == 0f)
-        //    return;
-
         RestartLevel();
     }
 
@@ -61,11 +60,14 @@ public class GameManager : MonoBehaviour
             return;
 
         if (player == null)
-        {
             CachePlayer();
-        }
 
-        if (player != null && player.position.y <= voidHeight)
+        if (player == null)
+            return;
+
+        float playerHeight = player.position.y;
+
+        if (playerHeight <= voidHeight || playerHeight >= maximumHeight)
         {
             RestartLevel();
         }
@@ -77,9 +79,7 @@ public class GameManager : MonoBehaviour
             GameObject.FindGameObjectWithTag("Player");
 
         if (playerObject != null)
-        {
             player = playerObject.transform;
-        }
     }
 
     public void RestartLevel()
@@ -97,21 +97,15 @@ public class GameManager : MonoBehaviour
         }
 
         if (SceneTransitionManager.Instance.ReloadCurrentScene())
-        {
             isRestarting = true;
-        }
     }
 
     private void OnDestroy()
     {
         if (playerInput != null)
-        {
             playerInput.Dispose();
-        }
 
         if (Instance == this)
-        {
             Instance = null;
-        }
     }
 }

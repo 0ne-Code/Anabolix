@@ -109,6 +109,8 @@ MonoBehaviour:
   disappearDelay: 1
   throwForce: 8
   upwardForce: 3.5
+  audioSource: {fileID: 0}
+  entityAppearanceSound: {fileID: 8300000, guid: f858834b1979d0c459efbf3abea127d2, type: 3}
 --- !u!1 &7731303615952887017
 GameObject:
   m_ObjectHideFlags: 0

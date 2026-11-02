@@ -12,6 +12,9 @@ public class AbilityController : MonoBehaviour
     [SerializeField, Min(0f)] private float abilityRange = 10f;
     [SerializeField] private LayerMask abilityLayers = Physics.DefaultRaycastLayers;
 
+    [Header("Player Gravity Mode")]
+    [SerializeField] private PlayerController playerController;
+
     private PlayerInputActions playerInput;
 
     private void Awake()
@@ -23,6 +26,9 @@ public class AbilityController : MonoBehaviour
 
         if (abilityManager == null)
             Debug.LogError("AbilityController: Ability Manager is not assigned.", this);
+
+        if (playerController == null)
+            Debug.LogError("AbilityController: Player Controller is not assigned.", this);
     }
 
     private void OnEnable()
@@ -53,6 +59,18 @@ public class AbilityController : MonoBehaviour
     {
         if (playerCamera == null || abilityManager == null)
             return;
+
+        if (abilityManager.SelectedAbility == AbilityManager.Ability.GravityFlip &&
+            playerController != null &&
+            playerController.PlayerGravityMode)
+        {
+            bool success = playerController.ToggleGravity();
+
+            if (success)
+                Debug.Log("Player Gravity Flipped!");
+
+            return;
+        }
 
         Ray ray = playerCamera.ViewportPointToRay(
             new Vector3(0.5f, 0.5f, 0f)

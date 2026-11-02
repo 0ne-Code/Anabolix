@@ -215,7 +215,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbilityManager
   selectedAbility: 0
   audioSource: {fileID: 4287045959814596482}
-  abilitySwitchClip: {fileID: 8300000, guid: b56e47570126bb54ab8925240d12f744, type: 3}
+  abilitySwitchClip: {fileID: 0}
 --- !u!114 &8091899145466602491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234,6 +234,7 @@ MonoBehaviour:
   abilityLayers:
     serializedVersion: 2
     m_Bits: 59
+  playerController: {fileID: 8428810102946537464}
 --- !u!54 &4528572018830256139
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -293,13 +294,17 @@ MonoBehaviour:
   jumpForce: 7
   verticalVel: 0
   isGrounded: 0
-  castPosOffset: 0.8
+  castPosOffset: 0.61
   sphereRadius: 0.5
   layerMask:
     serializedVersion: 2
     m_Bits: 8
+  normalGravity: -40
+  invertedGravity: 45
+  rotationSpeed: 540
   mouseLook: {fileID: 249521144602469483}
   rb: {fileID: 4528572018830256139}
+  playerCamera: {fileID: 1607931202954027431}
 --- !u!82 &4287045959814596482
 AudioSource:
   m_ObjectHideFlags: 0
@@ -415,6 +420,7 @@ MonoBehaviour:
   sprintingInterval: 0.35
   walkingPitch: 0.5
   sprintingPitch: 0.8
+  jumpPitch: 1.2
   volume: 0.3
 --- !u!1 &8711055896833091060
 GameObject:
@@ -599,5 +605,8 @@ MonoBehaviour:
   jumpCameraOffset: 0.025
   landingCameraOffset: 0.07
   impactReturnSpeed: 10
+  shakeDuration: 0.35
+  shakeIntensity: 0.08
+  shakeReturnSpeed: 12
   playerController: {fileID: 8428810102946537464}
   playerRb: {fileID: 4528572018830256139}

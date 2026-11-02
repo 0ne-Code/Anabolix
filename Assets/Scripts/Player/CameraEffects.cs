@@ -19,7 +19,7 @@ public class CameraEffects : MonoBehaviour
     [SerializeField] private float normalFOV = 75f;
     [SerializeField] private float sprintFOV = 85f;
     [SerializeField] private float fovSmoothSpeed = 5f;
-    
+
     [Header("Idle Breathing")]
     [SerializeField] private float breathingAmplitude = 0.012f;
     [SerializeField] private float breathingFrequency = 1.2f;
@@ -31,9 +31,17 @@ public class CameraEffects : MonoBehaviour
     [SerializeField] private float landingCameraOffset = 0.07f;
     [SerializeField] private float impactReturnSpeed = 10f;
 
+    [Header("Camera Shake")]
+    [SerializeField] private float shakeDuration = 0.35f;
+    [SerializeField] private float shakeIntensity = 0.08f;
+    [SerializeField] private float shakeReturnSpeed = 12f;
+
     private float breathingTimer;
     private float breathingOffset;
     private float impactOffset;
+
+    private float shakeTimer;
+    private Vector3 shakeOffset;
 
     [Header("References")]
     [SerializeField] private PlayerController playerController;
@@ -52,6 +60,7 @@ public class CameraEffects : MonoBehaviour
     {
         HandleHeadBob();
         HandleJumpAndLanding();
+        HandleCameraShake();
         HandleFOV();
     }
 
@@ -106,8 +115,7 @@ public class CameraEffects : MonoBehaviour
             smoothSpeed * Time.deltaTime
         );
 
-        transform.localPosition = startingPosition +
-            Vector3.up * (breathingOffset + impactOffset);
+        UpdateCameraPosition();
     }
 
     private void HandleJumpAndLanding()
@@ -127,6 +135,40 @@ public class CameraEffects : MonoBehaviour
             0f,
             impactReturnSpeed * Time.deltaTime
         );
+
+        UpdateCameraPosition();
+    }
+
+    private void HandleCameraShake()
+    {
+        if (shakeTimer > 0f)
+        {
+            shakeTimer -= Time.deltaTime;
+
+            shakeOffset = Random.insideUnitSphere * shakeIntensity;
+        }
+        else
+        {
+            shakeOffset = Vector3.Lerp(
+                shakeOffset,
+                Vector3.zero,
+                shakeReturnSpeed * Time.deltaTime
+            );
+        }
+
+        UpdateCameraPosition();
+    }
+
+    private void UpdateCameraPosition()
+    {
+        transform.localPosition = startingPosition +
+            Vector3.up * (breathingOffset + impactOffset) +
+            shakeOffset;
+    }
+
+    public void ShakeCamera()
+    {
+        shakeTimer = shakeDuration;
     }
 
     private void HandleFOV()

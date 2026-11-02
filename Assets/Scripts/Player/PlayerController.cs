@@ -20,20 +20,37 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float sphereRadius;
     [SerializeField] private LayerMask layerMask;
 
-    private const float gravity = -19.62f;
+    [Header("Gravity")]
+    [SerializeField] private float normalGravity = -19.6f;
+    [SerializeField] private float invertedGravity = -40f;
+
+    [Header("Gravity Rotation")]
+    [SerializeField] private float rotationSpeed = 360f;
 
     [SerializeField] private MouseLook mouseLook;
     [SerializeField] private Rigidbody rb;
+    [SerializeField] private Transform playerCamera;
 
     private PlayerInputActions playerInput;
     private bool movementLocked;
+    private bool gravityInverted;
+
+    private Quaternion initialRotation;
+    private Quaternion targetRotation;
+
     public bool IsGrounded => isGrounded;
+    public bool IsGravityInverted => gravityInverted;
+
     public bool IsSprinting => playerInput.Player.Sprint.IsPressed();
-    public bool IsMoving => playerInput.Player.Move.ReadValue<Vector2>().sqrMagnitude > 0.01f;
+
+    public bool IsMoving =>
+        playerInput.Player.Move.ReadValue<Vector2>().sqrMagnitude > 0.01f;
+
     public bool JustJumped { get; private set; }
     public bool JustLanded { get; private set; }
+    public bool PlayerGravityMode { get; private set; }
 
-    void Awake()
+    private void Awake()
     {
         playerInput = new PlayerInputActions();
 
@@ -41,64 +58,61 @@ public class PlayerController : MonoBehaviour
         rb.constraints = RigidbodyConstraints.FreezeRotation;
 
         currentSpeed = moveSpeed;
+
+        initialRotation = rb.rotation;
+        targetRotation = initialRotation;
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
         playerInput.Player.Enable();
         playerInput.Player.Jump.performed += HandleJump;
     }
 
-    void HandleJump(InputAction.CallbackContext ctx)
+    private void HandleJump(InputAction.CallbackContext ctx)
     {
         if (movementLocked)
             return;
 
         if (isGrounded)
         {
-            verticalVel = jumpForce;
+            verticalVel = gravityInverted
+                ? -jumpForce
+                : jumpForce;
+
             JustJumped = true;
         }
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         playerInput.Player.Jump.performed -= HandleJump;
         playerInput.Player.Disable();
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        //JustJumped = false;
-        //JustLanded = false;
-
         CheckGrounded();
         HandleGravity();
+        HandleRotation();
 
         if (movementLocked)
         {
-            rb.linearVelocity = new Vector3(
-                0f,
-                verticalVel,
-                0f
-            );
-
+            rb.linearVelocity = new Vector3(0f, verticalVel, 0f);
             return;
         }
 
         HandleMovement();
     }
 
-    void HandleMovement()
+    private void HandleMovement()
     {
-        float inputX;
-        float inputY;
-
         Vector2 moveInput = playerInput.Player.Move.ReadValue<Vector2>();
 
         bool sprinting = playerInput.Player.Sprint.IsPressed();
+
         float targetSpeed = sprinting
-            ? (moveSpeed * sprintMultiplier)
+            ? moveSpeed * sprintMultiplier
             : moveSpeed;
 
         currentSpeed = Mathf.Lerp(
@@ -109,59 +123,112 @@ public class PlayerController : MonoBehaviour
 
         float airControl = isGrounded ? 1f : 0.7f;
 
-        inputX = moveInput.x * currentSpeed * airControl;
-        inputY = moveInput.y * currentSpeed * airControl;
+        float inputX = moveInput.x * currentSpeed * airControl;
+        float inputY = moveInput.y * currentSpeed * airControl;
 
-        Vector3 currentLocalVel = new Vector3(
-            rb.linearVelocity.x,
-            verticalVel,
-            rb.linearVelocity.z
-        );
+        // Get the actual camera directions.
+        Vector3 cameraForward = playerCamera.forward;
+        Vector3 cameraRight = playerCamera.right;
 
-        Vector3 localVel = Quaternion.Euler(
-            0f,
-            mouseLook.currentYaw,
-            0f
-        ) * new Vector3(inputX, 0f, inputY);
+        // Keep movement on the horizontal plane.
+        cameraForward.y = 0f;
+        cameraRight.y = 0f;
 
-        localVel.y = verticalVel;
+        cameraForward.Normalize();
+        cameraRight.Normalize();
+
+        // Calculate movement relative to camera direction.
+        Vector3 moveDirection =
+            cameraRight * inputX +
+            cameraForward * inputY;
+
+        // Preserve gravity movement.
+        moveDirection.y = verticalVel;
 
         if (!isGrounded)
         {
             rb.linearVelocity = Vector3.Lerp(
-                currentLocalVel,
-                localVel,
+                rb.linearVelocity,
+                moveDirection,
                 3f * Time.fixedDeltaTime
             );
         }
         else
         {
-            rb.linearVelocity = localVel;
+            rb.linearVelocity = moveDirection;
         }
     }
 
-    void HandleGravity()
+    private void HandleGravity()
     {
-        if (isGrounded && verticalVel < 0f)
-            verticalVel = -1f;
-        else
-            verticalVel += gravity * Time.fixedDeltaTime;
+        if (isGrounded)
+        {
+            if (!gravityInverted && verticalVel < 0f)
+                verticalVel = -1f;
+
+            if (gravityInverted && verticalVel > 0f)
+                verticalVel = 1f;
+
+            return;
+        }
+
+        float currentGravity = gravityInverted
+            ? invertedGravity
+            : normalGravity;
+
+        verticalVel += currentGravity * Time.fixedDeltaTime;
     }
 
-    void CheckGrounded()
+    private void CheckGrounded()
     {
         bool wasGrounded = isGrounded;
 
-        Vector3 castPos = transform.position +
-            (Vector3.down * castPosOffset);
+        Vector3 gravityDirection = gravityInverted
+            ? Vector3.up
+            : Vector3.down;
 
-        isGrounded = Physics.CheckSphere(
-            castPos,
+        Vector3 castOrigin = transform.position;
+
+        isGrounded = Physics.SphereCast(
+            castOrigin,
             sphereRadius,
-            layerMask
+            gravityDirection,
+            out RaycastHit hit,
+            castPosOffset,
+            layerMask,
+            QueryTriggerInteraction.Ignore
         );
 
         JustLanded = !wasGrounded && isGrounded;
+    }
+
+    private void HandleRotation()
+    {
+        Quaternion nextRotation = Quaternion.RotateTowards(
+            rb.rotation,
+            targetRotation,
+            rotationSpeed * Time.fixedDeltaTime
+        );
+
+        rb.MoveRotation(nextRotation);
+    }
+
+    public bool ToggleGravity()
+    {
+        if (!isGrounded)
+            return false;
+
+        gravityInverted = !gravityInverted;
+
+        verticalVel = 0f;
+
+        // Flip around X when inverted.
+        // Restore the exact starting rotation when normal.
+        targetRotation = gravityInverted
+            ? initialRotation * Quaternion.Euler(180f, 0f, 0f)
+            : initialRotation;
+
+        return true;
     }
 
     public void SetMovementLocked(bool locked)
@@ -169,9 +236,7 @@ public class PlayerController : MonoBehaviour
         movementLocked = locked;
 
         if (locked)
-        {
             verticalVel = 0f;
-        }
     }
 
     public bool ConsumeJustJumped()
@@ -192,12 +257,22 @@ public class PlayerController : MonoBehaviour
         return true;
     }
 
-    void OnDrawGizmos()
+    private void OnDrawGizmos()
     {
         Gizmos.color = isGrounded ? Color.blue : Color.red;
 
-        Vector3 drawPos = transform.position + (Vector3.down * castPosOffset);
+        Vector3 gravityDirection = gravityInverted
+            ? Vector3.up
+            : Vector3.down;
+
+        Vector3 drawPos = transform.position +
+            gravityDirection * castPosOffset;
 
         Gizmos.DrawWireSphere(drawPos, sphereRadius);
+    }
+
+    public void EnablePlayerGravityMode()
+    {
+        PlayerGravityMode = true;
     }
 }
